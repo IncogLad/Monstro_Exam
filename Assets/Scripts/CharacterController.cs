@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -56,23 +57,47 @@ public class CharacterController : MonoBehaviour
 
     void CheckCollision()
     {
-        if (playerBounds.extents.y + transform.position.y < groundBounds.position.y)
+        if (transform.position.y - playerBounds.extents.y < groundBounds.position.y)
         {
             Debug.Log("hit");
             GameManager.instance.GameOver();
         }
 
+        int start = 0;
 
+        if (GameManager.instance.ObstacleGenerator.ObstacleBoxesList.Count >= 3)
+        {
+            start = GameManager.instance.ObstacleGenerator.ObstacleBoxesList.Count - 3;
+        }
+        
+        for (int i = start; i < GameManager.instance.ObstacleGenerator.ObstacleBoxesList.Count; i++)
+        {
+            if (transform.position.y - playerBounds.extents.y <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].bottomBox.topLeft.y &&
+            transform.position.y - playerBounds.extents.y <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].bottomBox.topRight.y &&
+            transform.position.x + playerBounds.extents.x >= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].bottomBox.topLeft.x &&
+            transform.position.x + playerBounds.extents.x >= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].bottomBox.bottomLeft.x &&
+            transform.position.x - playerBounds.extents.x <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].bottomBox.topRight.x &&
+            transform.position.x - playerBounds.extents.x <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].bottomBox.bottomRight.x)
+            {
+                Debug.Log("hit");
+                GameManager.instance.GameOver();
+            }
 
-        //RaycastHit hit;
-        //if (Physics.SphereCast(pos, playerBounds.extents.x, vel, out hit))
-        //{
-        //    if (hit.collider == null)
-        //    {
-        //        Debug.Log("hit");
-        //    }
-            
-        //}
+            if (transform.position.y - playerBounds.extents.y <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.topLeft.y &&
+                transform.position.y - playerBounds.extents.y <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.topRight.y &&
+                transform.position.x + playerBounds.extents.x >= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.topLeft.x &&
+                transform.position.x + playerBounds.extents.x >= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.bottomLeft.x &&
+                transform.position.x - playerBounds.extents.x <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.topRight.x &&
+                transform.position.x - playerBounds.extents.x <= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.bottomRight.x &&
+                transform.position.y + playerBounds.extents.y >= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.bottomLeft.y &&
+                transform.position.y + playerBounds.extents.y >= GameManager.instance.ObstacleGenerator.ObstacleBoxesList[i].topBox.bottomRight.y)
+            {
+                Debug.Log("hit");
+                GameManager.instance.GameOver();
+            }
+        }
+        
+
     }
 
     void OnDrawGizmos()

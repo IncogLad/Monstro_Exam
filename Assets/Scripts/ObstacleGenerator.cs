@@ -21,6 +21,7 @@ public class ObstacleGenerator : MonoBehaviour
 
     public float NoMeatOffset = 0.35f;
     public float SeparatorOffset = 0.55f;
+    public float ObstacleWidthOffset = 0.65f;
 
     public float UniformObstacleScale = 0.6f;
 
@@ -32,6 +33,21 @@ public class ObstacleGenerator : MonoBehaviour
     private const int MAX_MEAT_PERLINE = 5;
 
     public Queue<GameObject> PreviousSpawnedObstacles = new Queue<GameObject>();
+    public List<ObstacleBoxes> ObstacleBoxesList = new List<ObstacleBoxes>();
+
+    public struct ObstacleBoxes
+    {
+        public BoundingBox topBox;
+        public BoundingBox bottomBox;
+    }
+
+    public struct BoundingBox
+    {
+        public Vector2 topLeft;
+        public Vector2 topRight;
+        public Vector2 bottomLeft;
+        public Vector2 bottomRight;
+    }
 
 
     void Start()
@@ -59,6 +75,8 @@ public class ObstacleGenerator : MonoBehaviour
 
     void SpawnObstacleAt(Vector3 pos)
     {
+        ObstacleBoxes tempBox = new ObstacleBoxes();
+
         Vector3 topPos = pos + new Vector3(0, CeilStartYPos, 0); 
         //spawn for top
         if (topMeatCount > 0)
@@ -85,8 +103,18 @@ public class ObstacleGenerator : MonoBehaviour
         objSpike.GetComponent<SpriteRenderer>().flipY = true;
         PreviousSpawnedObstacles.Enqueue(objSpike);
 
-       //spawn for bottom
-       Vector3 bottomPos = pos + new Vector3(0, GroundStartYPos, 0); ;
+        float totalTopBoxTopEdgeY = CeilStartYPos;
+        float totalTopBoxBottomEdgeY = topPos.y ;
+        float totalTopBoxLeftEdgeX = pos.x - ObstacleWidthOffset;
+        float totalTopBoxRightEdgeX = pos.x + ObstacleWidthOffset;
+
+        tempBox.topBox.topLeft = new Vector2(totalTopBoxLeftEdgeX, totalTopBoxTopEdgeY);
+        tempBox.topBox.topRight = new Vector2(totalTopBoxRightEdgeX, totalTopBoxTopEdgeY);
+        tempBox.topBox.bottomLeft = new Vector2(totalTopBoxLeftEdgeX, totalTopBoxBottomEdgeY);
+        tempBox.topBox.bottomRight = new Vector2(totalTopBoxRightEdgeX, totalTopBoxBottomEdgeY);
+
+        //spawn for bottom
+        Vector3 bottomPos = pos + new Vector3(0, GroundStartYPos, 0); ;
         int bottomMeatCount = MAX_MEAT_PERLINE - topMeatCount;
         if (bottomMeatCount > 0)
         {
@@ -110,6 +138,17 @@ public class ObstacleGenerator : MonoBehaviour
         bottomPos += new Vector3(0, SeparatorOffset, 0);
         PreviousSpawnedObstacles.Enqueue(Instantiate(Stick, bottomPos, Quaternion.identity));
 
+        float totalBottomBoxBottomEdgeY = GroundStartYPos;
+        float totalBottomBoxTopEdgeY = bottomPos.y ;
+        float totalBottomBoxLeftEdgeX = pos.x - ObstacleWidthOffset;
+        float totalBottomBoxRightEdgeX = pos.x + ObstacleWidthOffset;
+
+        tempBox.bottomBox.topLeft = new Vector2(totalBottomBoxLeftEdgeX, totalBottomBoxTopEdgeY);
+        tempBox.bottomBox.topRight = new Vector2(totalBottomBoxRightEdgeX, totalBottomBoxTopEdgeY);
+        tempBox.bottomBox.bottomLeft = new Vector2(totalBottomBoxLeftEdgeX, totalBottomBoxBottomEdgeY);
+        tempBox.bottomBox.bottomRight = new Vector2(totalBottomBoxRightEdgeX, totalBottomBoxBottomEdgeY);
+
+        ObstacleBoxesList.Add(tempBox);
 
         ObstacleLineSpawned++;
     }
