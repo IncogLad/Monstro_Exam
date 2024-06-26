@@ -2273,7 +2273,9 @@ MonoBehaviour:
   CeilStartYPos: 5.55
   NoMeatOffset: 0.35
   SeparatorOffset: 0.55
+  ObstacleWidthOffset: 0.65
   UniformObstacleScale: 0.6
+  NextDestinationtoReach: 10
   ObstacleLineSpawned: 0
 --- !u!4 &849150975
 Transform:
@@ -2780,7 +2782,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1103016187
 RectTransform:
   m_ObjectHideFlags: 0
