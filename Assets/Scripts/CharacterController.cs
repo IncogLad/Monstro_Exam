@@ -12,12 +12,12 @@ public class CharacterController : MonoBehaviour
     private Bounds playerBounds;
     private float boundsEdgeWidth = 0.01f;
 
-    private Transform obstacleTransform;
+    [SerializeField] private Transform obstacleTransform;
+    [SerializeField] private Transform groundBounds;
 
     private float  verticalSpeed;
 
     private Vector3 totalVerticalVector;
-
 
     void Start()
     {
@@ -28,15 +28,10 @@ public class CharacterController : MonoBehaviour
     
     void Update()
     {
-        UpdateBounds();
         UpdatePlayerPhysics();
-        CheckCollision(totalVerticalVector, transform.position);
+        CheckCollision();
     }
-
-    void UpdateBounds()
-    {
-        playerBounds.Expand(-3 * boundsEdgeWidth);
-    }
+    
 
     void UpdatePlayerPhysics()
     {
@@ -45,6 +40,11 @@ public class CharacterController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             verticalSpeed = jumpForce;
+            if (!GameManager.instance.GameOverUI.activeSelf && GameManager.instance.GameStartUI.activeSelf)
+            {
+                GameManager.instance.GameStartUI.SetActive(false);
+                Time.timeScale = 1.0f;
+            }
         }
 
         totalVerticalVector = new Vector3(0, verticalSpeed, 0);
@@ -54,24 +54,36 @@ public class CharacterController : MonoBehaviour
     }
     
 
-    void CheckCollision(Vector3 vel, Vector3 pos)
+    void CheckCollision()
     {
-        float dist = vel.magnitude + boundsEdgeWidth;
-
-        RaycastHit hit;
-        if (Physics.SphereCast(pos, playerBounds.extents.x, vel.normalized, out hit, dist,
-                LayerMask.GetMask("Obstacle")))
+        if (playerBounds.extents.y + transform.position.y < groundBounds.position.y)
         {
-            Vector3 snapSurface = vel.normalized * (hit.distance - boundsEdgeWidth);
-
-            if (snapSurface.magnitude <= boundsEdgeWidth)
-            {
-                snapSurface = Vector3.zero;
-            }
-
             Debug.Log("hit");
+            GameManager.instance.GameOver();
         }
+
+
+
+        //RaycastHit hit;
+        //if (Physics.SphereCast(pos, playerBounds.extents.x, vel, out hit))
+        //{
+        //    if (hit.collider == null)
+        //    {
+        //        Debug.Log("hit");
+        //    }
+            
+        //}
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, playerBounds.extents.x);
     }
 
 
+    public void PlayerReset()
+    {
+        Camera.main.transform.position = new Vector3(0, 0, -10);
+        transform.position = new Vector3(0, 3, 0);
+    }
 }

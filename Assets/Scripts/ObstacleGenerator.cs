@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using static UnityEditor.PlayerSettings;
 
 public class ObstacleGenerator : MonoBehaviour
@@ -18,11 +19,12 @@ public class ObstacleGenerator : MonoBehaviour
     public float GroundStartYPos = -3.25f;
     public float CeilStartYPos = 5.55f;
 
-    public float Spike = 0.65f;
     public float NoMeatOffset = 0.35f;
     public float SeparatorOffset = 0.55f;
 
     public float UniformObstacleScale = 0.6f;
+
+    public float NextDestinationtoReach = 10f;
 
     public int ObstacleLineSpawned = 0;
 
@@ -31,11 +33,13 @@ public class ObstacleGenerator : MonoBehaviour
 
     public Queue<GameObject> PreviousSpawnedObstacles = new Queue<GameObject>();
 
+
     void Start()
     {
         topMeatCount = Random.Range(0, 6);
         Vector3 startVector = new Vector3(ObstacleStartXPos, 0, 0);
         ObstacleLineSpawned = 0;
+        NextDestinationtoReach = 10f;
         SpawnObstacleAt(startVector);
     }
 
@@ -47,16 +51,9 @@ public class ObstacleGenerator : MonoBehaviour
             topMeatCount = Random.Range(0, 6);
             Vector3 ObstacleVector = new Vector3(ObstacleStartXPos + ObstacleVerticalSpacing * ObstacleLineSpawned, 0, 0);
             SpawnObstacleAt(ObstacleVector);
-        }
 
-        if (ObstacleLineSpawned > 1) //TODO: change 1 to score
-        {
-            if (PlayerPosition.transform.position.x > ObstacleVerticalSpacing * ObstacleLineSpawned)
-            {
-                DestroyAndDeQueue();
-            }
+            GameManager.instance.score++;
         }
-        
 
     }
 
@@ -83,7 +80,7 @@ public class ObstacleGenerator : MonoBehaviour
             PreviousSpawnedObstacles.Enqueue(Instantiate(objSeparator, topPos, Quaternion.identity));
         }
 
-        topPos -= new Vector3(0, Spike, 0);
+        topPos -= new Vector3(0, SeparatorOffset, 0);
         GameObject objSpike = Instantiate(Stick, topPos , Quaternion.identity);
         objSpike.GetComponent<SpriteRenderer>().flipY = true;
         PreviousSpawnedObstacles.Enqueue(objSpike);
@@ -110,7 +107,7 @@ public class ObstacleGenerator : MonoBehaviour
             PreviousSpawnedObstacles.Enqueue(Instantiate(objSeparator, bottomPos, Quaternion.identity));
         }
 
-        bottomPos += new Vector3(0, Spike, 0);
+        bottomPos += new Vector3(0, SeparatorOffset, 0);
         PreviousSpawnedObstacles.Enqueue(Instantiate(Stick, bottomPos, Quaternion.identity));
 
 
@@ -128,10 +125,26 @@ public class ObstacleGenerator : MonoBehaviour
 
     void DestroyAndDeQueueAll()
     {
-        foreach (var obj in PreviousSpawnedObstacles)
+        //Debug.Log(PreviousSpawnedObstacles.Count);
+
+        int total = PreviousSpawnedObstacles.Count;
+
+        for (int i = 0; i < total; i++)
         {
             Destroy(PreviousSpawnedObstacles.Dequeue());
+            //Debug.Log(i);
         }
+
+    }
+
+    public void ObstacleReset()
+    {
+        DestroyAndDeQueueAll();
+        topMeatCount = Random.Range(0, 6);
+        Vector3 startVector = new Vector3(ObstacleStartXPos, 0, 0);
+        ObstacleLineSpawned = 0;
+        NextDestinationtoReach = 10f;
+        SpawnObstacleAt(startVector);
     }
 
 }
