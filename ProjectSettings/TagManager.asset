@@ -8,10 +8,10 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
+  - Obstacle
   - 
   - 
   - 
@@ -40,4 +40,31 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Mountain2
+    uniqueID: 3903354249
+    locked: 0
+  - name: RearClouds
+    uniqueID: 2832819801
+    locked: 0
+  - name: Mountain1
+    uniqueID: 2592707007
+    locked: 0
+  - name: FrontClouds
+    uniqueID: 763415737
+    locked: 0
+  - name: RoundClouds
+    uniqueID: 2402590839
+    locked: 0
+  - name: Buildings
+    uniqueID: 4023090153
+    locked: 0
+  - name: Foreground
+    uniqueID: 1879045977
+    locked: 0
+  - name: Ground
+    uniqueID: 2408311367
+    locked: 0
+  - name: Player
+    uniqueID: 2521504717
     locked: 0

@@ -13,24 +13,24 @@ public class ParallaxBackground : MonoBehaviour
     
     void Start()
     {
+        scrollSpeed = 1 - scrollSpeed;
         startPos = transform.position.x;
         length = GetComponent<SpriteRenderer>().bounds.size.x * lengthOffset;
         cam = Camera.main;
     }
-
-    // Update is called once per frame
+    
     void FixedUpdate()
     {
-        float temp = cam.transform.position.x * (1 - scrollSpeed);
+        float move = cam.transform.position.x * (1 - scrollSpeed);
         float distance = cam.transform.position.x * scrollSpeed;
 
         transform.position = new Vector3(startPos + distance, transform.position.y, transform.position.z);
 
-        if (temp > startPos + length)
+        if (move > startPos + length)
         {
             startPos += length;
         }
-        else if (temp < startPos - length)
+        else if (move < startPos - length)
         {
             startPos -= length;
         }
